@@ -12,6 +12,20 @@
                 </div>
             </div>
 
+            @if(session('success'))
+                <div class="mb-8 p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-3 animate-fade-in">
+                    <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+                    <p class="text-sm font-bold text-emerald-700">{{ session('success') }}</p>
+                </div>
+            @endif
+
+            @if($errors->has('api_error'))
+                <div class="mb-8 p-4 rounded-xl bg-rose-50 border border-rose-100 flex items-center gap-3 animate-fade-in">
+                    <span class="material-symbols-outlined text-rose-600">error</span>
+                    <p class="text-sm font-bold text-rose-700">{{ $errors->first('api_error') }}</p>
+                </div>
+            @endif
+            
             <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">

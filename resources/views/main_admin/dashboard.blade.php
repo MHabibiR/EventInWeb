@@ -14,40 +14,58 @@
                 <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Event Aktif</p>
                     <div class="flex items-end gap-2">
-                        <span class="text-3xl font-black text-slate-900">128</span>
-                        <span class="text-xs font-bold text-emerald-500 mb-1">+5 Bulan Ini</span>
+                        <span class="text-3xl font-black text-slate-900">{{ $stats['total_events'] ?? 0 }}</span>
+                        <span class="text-xs font-bold text-emerald-500 mb-1">Via API</span>
                     </div>
                 </div>
+
                 <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Pengguna (Mobile)</p>
-                    <div class="text-3xl font-black text-slate-900">12,450</div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Organizer</p>
+                    <div class="flex items-end gap-2">
+                        <span class="text-3xl font-black text-slate-900">{{ $stats['total_organizers'] ?? 0 }}</span>
+                    </div>
                 </div>
-                <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm border-l-4 border-l-amber-500">
-                    <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2">Proposal Pending</p>
-                    <div class="text-3xl font-black text-slate-900">14</div>
+
+                <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Peserta</p>
+                    <div class="flex items-end gap-2">
+                        <span class="text-3xl font-black text-slate-900">{{ $stats['total_participants'] ?? 0 }}</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-10 rounded-[2.5rem] border border-amber-100 shadow-sm bg-amber-50/20">
+                    <p class="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2">Proposal Menunggu</p>
+                    <div class="flex items-end gap-2">
+                        <span class="text-3xl font-black text-amber-600">{{ $stats['pending_proposals'] ?? 0 }}</span>
+                    </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-12 gap-8">
-                <div class="col-span-12 lg:col-span-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-                    <div class="p-8 border-b border-slate-50 flex justify-between items-center">
-                        <h3 class="text-lg font-black text-slate-900">Antrean Pengajuan Event</h3>
-                        <a href="main_admin/proposals.php" class="text-[10px] font-black text-cyan-600 uppercase tracking-widest hover:underline">Kelola Semua</a>
-                    </div>
-                    <div class="p-4 space-y-3">
-                        <div class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-2xl transition-colors group">
+                <div class="space-y-4">
+                    @forelse($stats['recent_events'] ?? [] as $event)
+                        <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-cyan-200 transition-colors">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:text-cyan-600">
-                                    <span class="material-symbols-outlined">description</span>
+                                <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-cyan-600">event_available</span>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-slate-900">Tech Expo 2026</h4>
-                                    <p class="text-[10px] text-slate-400 font-bold uppercase">Oleh: Digital Creative Corp</p>
+                                    <h4 class="font-bold text-slate-900">{{ $event['title'] ?? 'Judul Tidak Tersedia' }}</h4>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                        Status saat ini: <span class="text-slate-600">{{ $event['status'] ?? 'N/A' }}</span>
+                                    </p>
                                 </div>
                             </div>
-                            <span class="px-3 py-1 bg-amber-50 text-amber-600 text-[9px] font-black rounded-full uppercase">Review Needed</span>
+                            <span class="px-4 py-1.5 bg-cyan-50 text-cyan-600 text-[10px] font-black rounded-full uppercase tracking-widest border border-cyan-100">
+                                Cek Detail
+                            </span>
                         </div>
-                    </div>
+                    @empty
+                        <div class="flex flex-col items-center justify-center p-10 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
+                            <span class="material-symbols-outlined text-4xl text-slate-300 mb-3">inbox</span>
+                            <p class="text-sm font-bold text-slate-500">Tidak ada aktivitas terbaru.</p>
+                        </div>
+                    @endforelse
                 </div>
 
                 <div class="col-span-12 lg:col-span-4 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8">

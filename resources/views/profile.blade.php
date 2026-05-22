@@ -1,93 +1,107 @@
 @extends('layout.app')
 
-@section('title', 'Profil Penyelenggara')
+@section('title', 'Pengaturan Profil')
 
 @section('content')
     <main class="ml-72 min-h-screen flex flex-col bg-slate-50">
         <div class="p-10 max-w-4xl mx-auto w-full">
+            
             <div class="mb-10">
-                <h2 class="text-3xl font-black font-headline text-slate-900 tracking-tight">Profil Penyelenggara</h2>
-                <p class="text-slate-500 mt-2 font-medium">Kelola identitas resmi instansi Anda untuk kebutuhan branding sertifikat dan publikasi.</p>
+                <h2 class="text-3xl font-black font-headline text-slate-900 tracking-tight">
+                    {{ session('user_data.role') === 'main_admin' ? 'Profil Eksekutif Admin' : 'Profil Penyelenggara' }}
+                </h2>
+                <p class="text-slate-500 mt-2 font-medium">
+                    {{ session('user_data.role') === 'main_admin' ? 'Kelola kredensial keamanan akun kendali pusat sistem Anda.' : 'Kelola identitas resmi instansi Anda untuk kebutuhan branding sertifikat dan publikasi.' }}
+                </p>
             </div>
 
-            <form action="#" method="POST" class="space-y-8">
+            @if(session('success'))
+                <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-3 animate-fade-in">
+                    <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+                    <p class="text-sm font-bold text-emerald-700">{{ session('success') }}</p>
+                </div>
+            @endif
+
+            @if($errors->has('api_error'))
+                <div class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-100 flex items-center gap-3 animate-fade-in">
+                    <span class="material-symbols-outlined text-rose-600">error</span>
+                    <p class="text-sm font-bold text-rose-700">{{ $errors->first('api_error') }}</p>
+                </div>
+            @endif
+
+            <form action="{{ url('/profile/update') }}" method="POST" class="space-y-8">
+                @csrf
+                
                 <section class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h3 class="text-xs font-black text-slate-900 mb-8 uppercase tracking-widest flex items-center gap-2">
-                        <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span> Foto & Branding Instansi
+                        <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span> 
+                        {{ session('user_data.role') === 'main_admin' ? 'Foto Avatar Pengguna' : 'Foto & Branding Instansi' }}
                     </h3>
                     
                     <div class="flex flex-col md:flex-row items-center gap-8">
                         <div class="relative group">
                             <div class="w-32 h-32 rounded-[2rem] bg-slate-100 overflow-hidden border-4 border-white shadow-xl">
-                                <img id="preview-logo" src="assets/MBG.jpg" class="w-full h-full object-cover">
+                                <img id="preview-logo" src="{{ asset('assets/MBG.jpg') }}" class="w-full h-full object-cover" alt="Avatar">
                             </div>
-                            <label for="logo-upload" class="absolute -bottom-2 -right-2 w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg">
-                                <span class="material-symbols-outlined text-sm">photo_camera</span>
-                                <input type="file" id="logo-upload" class="hidden" accept="image/*" onchange="previewImage(event)">
-                            </label>
                         </div>
+                        
                         <div class="flex-1 text-center md:text-left">
-                            <h4 class="font-bold text-slate-900">Logo Resmi Instansi</h4>
-                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-                                Gunakan gambar format PNG transparan untuk hasil terbaik pada sertifikat digital. Maksimal 2MB.
-                            </p>
+                            <h4 class="font-bold text-slate-800 text-sm">Pas foto resmi akun</h4>
+                            <p class="text-xs text-slate-400 mt-1 max-w-sm">Gunakan foto beresolusi tinggi dengan rasio persegi 1:1 untuk performa visual terbaik.</p>
                         </div>
                     </div>
                 </section>
 
                 <section class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
                     <h3 class="text-xs font-black text-slate-900 mb-2 uppercase tracking-widest flex items-center gap-2">
-                        <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span> Informasi Identitas
+                        <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span> Informasi Dasar
                     </h3>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Nama Instansi / Penyelenggara</label>
-                            <input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none transition-all" value="Studio Arsitektur Karawang">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">
+                                {{ session('user_data.role') === 'main_admin' ? 'Nama Lengkap Admin' : 'Nama Instansi / Organisasi' }}
+                            </label>
+                            <input type="text" name="name" value="{{ old('name', $user['name'] ?? '') }}" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" required>
                         </div>
+
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Tipe Organisasi</label>
-                            <select class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-700 outline-none">
-                                <option>Perusahaan / Startup</option>
-                                <option>Instansi Pendidikan</option>
-                                <option>Komunitas / Organisasi</option>
-                                <option>Individu</option>
-                            </select>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Alamat Email Resmi</label>
+                            <input type="email" name="email" value="{{ old('email', $user['email'] ?? '') }}" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" required>
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Alamat Kantor Resmi</label>
-                            <textarea class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none transition-all h-24">Jl. Galuh Mas Raya, Telukjambe Timur, Karawang, Jawa Barat 41361</textarea>
-                        </div>
+
+                        @if(session('user_data.role') === 'organizer')
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Tipe Penyelenggara</label>
+                                <select name="organization_type" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer">
+                                    <option value="Individu" {{ (old('organization_type', $user['organization_type'] ?? '') == 'Individu') ? 'selected' : '' }}>Individu / Perorangan</option>
+                                    <option value="Lembaga" {{ (old('organization_type', $user['organization_type'] ?? '') == 'Lembaga') ? 'selected' : '' }}>Lembaga / Perusahaan / UKM</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Nomor Telepon / WhatsApp</label>
+                                <input type="text" name="phone" value="{{ old('phone', $user['phone'] ?? '') }}" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" placeholder="Contoh: 08123xxx">
+                            </div>
+                        @endif
                     </div>
                 </section>
 
                 <section class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
                     <h3 class="text-xs font-black text-slate-900 mb-2 uppercase tracking-widest flex items-center gap-2">
-                        <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span> Kontak & Keamanan Akun
+                        <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span> Kredensial Keamanan
                     </h3>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Email Resmi (Login)</label>
-                            <input type="email" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-400 cursor-not-allowed" value="admin@arc-karawang.com" disabled>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Nomor WhatsApp PIC</label>
-                            <input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" value="081234567890">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Password Baru</label>
-                            <input type="password" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" placeholder="••••••••">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Konfirmasi Password</label>
-                            <input type="password" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" placeholder="••••••••">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Kata Sandi Baru</label>
+                            <input type="password" name="password" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" placeholder="Kosongkan jika tidak ingin diubah">
                         </div>
                     </div>
                 </section>
 
                 <div class="flex items-center justify-end gap-4 pb-12">
-                    <button type="button" class="px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors">Batalkan</button>
+                    <button type="button" onclick="window.history.back()" class="px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors">Batalkan</button>
                     <button type="submit" class="primary-gradient text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-cyan-500/30 hover:scale-105 active:scale-95 transition-all">
                         Simpan Perubahan Profil
                     </button>
@@ -95,15 +109,4 @@
             </form>
         </div>
     </main>
-
-    <script>
-        function previewImage(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const output = document.getElementById('preview-logo');
-                output.src = reader.result;
-            }
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    </script>
 @endsection
