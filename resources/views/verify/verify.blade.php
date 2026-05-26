@@ -22,6 +22,11 @@
         }
         .font-headline { font-family: var(--font-headline); }
         .primary-gradient { background: linear-gradient(135deg, #006876 0%, #00bcd4 100%); }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6">
@@ -38,18 +43,18 @@
     </div>
 
     <div class="w-full max-w-2xl bg-white p-8 rounded-[2.5rem] shadow-2xl shadow-slate-200/60 border border-slate-100">
-        <div class="flex flex-col md:flex-row gap-4">
+        <form onsubmit="event.preventDefault(); checkValidity();" class="flex flex-col md:flex-row gap-4 m-0">
             <div class="flex-1 relative">
                 <span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">qr_code_scanner</span>
-                <input type="text" id="cert-id" 
+                <input type="text" id="cert-id" required
                     class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl pl-14 pr-6 py-4 text-slate-900 font-bold placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all uppercase" 
-                    placeholder="CONTOH: CERT-2024-ADS-09122">
+                    placeholder="CONTOH: CERT-2026-XYZ-09122">
             </div>
-            <button onclick="checkValidity()" class="primary-gradient text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+            <button type="submit" class="primary-gradient text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
                 <span class="material-symbols-outlined">search</span>
                 PERIKSA
             </button>
-        </div>
+        </form>
 
         <div class="mt-6 flex items-center justify-center gap-4 text-slate-400">
             <div class="h-[1px] flex-1 bg-slate-100"></div>
@@ -57,8 +62,8 @@
             <div class="h-[1px] flex-1 bg-slate-100"></div>
         </div>
 
-        <button class="w-full mt-6 bg-slate-50 border-2 border-dashed border-slate-200 py-4 rounded-2xl text-slate-500 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
-            <span class="material-symbols-outlined">photo_camera</span>
+        <button type="button" class="w-full mt-6 bg-slate-50 border-2 border-dashed border-slate-200 py-4 rounded-2xl text-slate-500 font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors cursor-pointer group">
+            <span class="material-symbols-outlined group-hover:text-cyan-600 transition-colors">photo_camera</span>
             Buka Kamera Scanner
         </button>
     </div>
@@ -74,19 +79,19 @@
             <div class="w-full grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-emerald-200/50">
                 <div class="text-left">
                     <label class="text-[10px] font-black text-emerald-600/50 uppercase tracking-widest">Nama Peserta</label>
-                    <p class="font-bold text-emerald-900">Elena Rodriguez</p>
+                    <p class="font-bold text-emerald-900">Muhammad Habibi Rahman</p>
                 </div>
                 <div class="text-left">
                     <label class="text-[10px] font-black text-emerald-600/50 uppercase tracking-widest">Nama Acara</label>
-                    <p class="font-bold text-emerald-900">Architecture Design Summit 2024</p>
+                    <p class="font-bold text-emerald-900">Architecture Design Summit 2026</p>
                 </div>
                 <div class="text-left">
                     <label class="text-[10px] font-black text-emerald-600/50 uppercase tracking-widest">Tanggal Terbit</label>
-                    <p class="font-bold text-emerald-900">19 April 2026</p>
+                    <p class="font-bold text-emerald-900">{{ date('d F Y') }}</p>
                 </div>
                 <div class="text-left">
                     <label class="text-[10px] font-black text-emerald-600/50 uppercase tracking-widest">Status Kehadiran</label>
-                    <p class="font-bold text-emerald-900">Terverifikasi Hadir</p>
+                    <p class="font-bold text-emerald-900 flex items-center gap-1"><span class="material-symbols-outlined text-sm">verified</span> Terverifikasi Hadir</p>
                 </div>
             </div>
         </div>
@@ -98,19 +103,16 @@
 
     <script>
         function checkValidity() {
+            const inputVal = document.getElementById('cert-id').value;
+            if(!inputVal) return;
+
             const result = document.getElementById('result-container');
-            // Fokus Frontend: Menampilkan hasil simulasi
+            // Menampilkan hasil setelah tombol klik (Bisa dimodif jadi fetch AJAX backend)
             result.classList.remove('hidden');
-            result.scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
     </script>
-
-    <style>
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
-    </style>
 </body>
 </html>

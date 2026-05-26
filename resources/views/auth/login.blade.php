@@ -36,24 +36,35 @@
     <div class="w-full max-w-md">
         <div class="text-center mb-10">
             <div class="inline-flex w-20 h-20 sm:w-40 sm:h-14 primary-gradient rounded-2xl items-center justify-center text-white shadow-lg shadow-cyan-500/30 mb-6">
-                <span style="font-variation-settings: 'FILL' 1;">EventIn</span>
+                <span class="font-black text-xl tracking-wider">EventIn</span>
             </div>
             <h1 class="text-3xl font-black font-headline text-slate-900 tracking-tight">Welcome Back</h1>
-            <p class="text-slate-500 mt-2 font-medium">Event Management EventIn</p>
+            <p class="text-slate-500 mt-2 font-medium">Platform Event Management</p>
         </div>
 
         <div class="glass-panel p-8 rounded-[2.5rem] shadow-2xl shadow-slate-200/50">
             <form action="{{ url('/login-process') }}" method="POST" class="space-y-6">
-                @csrf @if($errors->has('login_error'))
-                    <div class="bg-rose-50 text-rose-600 text-sm font-bold p-4 rounded-xl border border-rose-100 mb-4">
+                @csrf 
+                
+                @if($errors->has('login_error'))
+                    <div class="bg-rose-50 text-rose-600 text-sm font-bold p-4 rounded-xl border border-rose-100 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">error</span>
                         {{ $errors->first('login_error') }}
                     </div>
                 @endif
+                
+                @if(session('success'))
+                    <div class="bg-emerald-50 text-emerald-600 text-sm font-bold p-4 rounded-xl border border-emerald-100 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">check_circle</span>
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 <div>
                     <label for="email" class="block text-sm font-bold text-slate-800 mb-2 ml-1">Email Address</label>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 transition-all" placeholder="admin@eventin.com" required>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 transition-all" placeholder="admin@eventin.com" required autofocus>
                     </div>
                 </div>
 
@@ -72,7 +83,7 @@
 
                 <label class="flex items-center gap-3 cursor-pointer group w-fit">
                     <div class="relative flex items-center">
-                        <input type="checkbox" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-md checked:bg-cyan-600 checked:border-cyan-600 transition-all">
+                        <input type="checkbox" name="remember" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-md checked:bg-cyan-600 checked:border-cyan-600 transition-all">
                         <span class="material-symbols-outlined absolute text-white text-sm scale-0 peer-checked:scale-100 transition-transform left-0.5 pointer-events-none">check</span>
                     </div>
                     <span class="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Remember this device</span>

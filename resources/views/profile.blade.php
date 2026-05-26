@@ -3,7 +3,7 @@
 @section('title', 'Pengaturan Profil')
 
 @section('content')
-    <main class="ml-72 min-h-screen flex flex-col bg-slate-50">
+    <main class="ml-72 min-h-screen flex flex-col bg-slate-50 font-inter">
         <div class="p-10 max-w-4xl mx-auto w-full">
             
             <div class="mb-10">
@@ -40,14 +40,14 @@
                     
                     <div class="flex flex-col md:flex-row items-center gap-8">
                         <div class="relative group">
-                            <div class="w-32 h-32 rounded-[2rem] bg-slate-100 overflow-hidden border-4 border-white shadow-xl">
+                            <div class="w-32 h-32 rounded-[2rem] bg-slate-100 overflow-hidden border-4 border-white shadow-xl ring-1 ring-slate-200">
                                 <img id="preview-logo" src="{{ asset('assets/MBG.jpg') }}" class="w-full h-full object-cover" alt="Avatar">
                             </div>
                         </div>
                         
                         <div class="flex-1 text-center md:text-left">
                             <h4 class="font-bold text-slate-800 text-sm">Pas foto resmi akun</h4>
-                            <p class="text-xs text-slate-400 mt-1 max-w-sm">Gunakan foto beresolusi tinggi dengan rasio persegi 1:1 untuk performa visual terbaik.</p>
+                            <p class="text-xs text-slate-400 mt-1 max-w-sm">Gunakan foto beresolusi tinggi dengan rasio persegi 1:1 untuk performa visual terbaik saat muncul di sertifikat.</p>
                         </div>
                     </div>
                 </section>
@@ -62,7 +62,7 @@
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">
                                 {{ session('user_data.role') === 'main_admin' ? 'Nama Lengkap Admin' : 'Nama Instansi / Organisasi' }}
                             </label>
-                            <input type="text" name="name" value="{{ old('name', $user['name'] ?? '') }}" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" required>
+                            <input type="text" name="name" value="{{ old('name', $user['name'] ?? session('user_data.name')) }}" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-cyan-500/20 outline-none" required>
                         </div>
 
                         <div>
@@ -101,12 +101,19 @@
                 </section>
 
                 <div class="flex items-center justify-end gap-4 pb-12">
-                    <button type="button" onclick="window.history.back()" class="px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors">Batalkan</button>
-                    <button type="submit" class="primary-gradient text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-cyan-500/30 hover:scale-105 active:scale-95 transition-all">
+                    <button type="button" onclick="window.history.back()" class="px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer">Batalkan</button>
+                    <button type="submit" class="primary-gradient text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-cyan-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer">
                         Simpan Perubahan Profil
                     </button>
                 </div>
             </form>
         </div>
+        <style>
+            @keyframes fade-in {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+        </style>
     </main>
 @endsection
