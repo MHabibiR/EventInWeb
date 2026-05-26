@@ -23,24 +23,24 @@ class AuthController extends Controller
         ]);
 
         // 2. Tembak API untuk verifikasi kredensial
-        $response = Http::post($this->apiUrl . '/login', [
+        $response = Http::post($this->apiUrl . '/login-organizer', [
             'email' => $request->email,
             'password' => $request->password,
         ]);
+        /* dd($response->status(), $response->json()); */
 
         // 3. Jika API mengembalikan status sukses (biasanya 200 OK)
         if ($response->successful()) {
             $data = $response->json();
 
-            // 4. Simpan Token dan Data User ke dalam Session Web
-            // Asumsi: API mengembalikan JSON berisi 'token' dan objek 'user'
             Session::put('api_token', $data['token']);
-            Session::put('user_data', $data['user']);
+            Session::put('user_data', $data['data']);
 
-            // 5. Redirect berdasarkan role
-            if ($data['user']['role'] === 'main_admin') {
+            if (($data['data']['role'] ?? null) == 'main_admin') {
                 return redirect('/admin/dashboard');
-            } elseif ($data['user']['role'] === 'organizer') {
+            }
+
+            if (($data['data']['role'] ?? null) == 'organizer') {
                 return redirect('/organizer/dashboard');
             }
 
