@@ -8,44 +8,38 @@ use Illuminate\Support\Facades\Session;
 
 class ProfileController extends Controller
 {
-    protected $apiUrl = 'http://127.0.0.1:8001/api';
+    public function __construct()
+    {
+        parent::__construct(); 
+    }
 
     public function index()
     {
-        /* Mengambil data profil terbaru  */
+        // Panggil API untuk mendapatkan profil (contoh endpoint: GET /api/profile)
         $response = Http::withToken(Session::get('api_token'))
-                        ->get($this->apiUrl . '/user/profile');
-
+                        ->get($this->apiUrl . '/profile');
+        
+        $profile = [];
         if ($response->successful()) {
-            $user = $response->json()['data'];
-        } else {
-            $user = Session::get('user_data');
+            $profile = $response->json()['data'] ?? [];
         }
 
-        return view('profile', compact('user'));
+        return view('profile', compact('profile'));
     }
-
 
     public function update(Request $request)
     {
-        /* Validasi input form web */
-        $rules = [
-            'name' => 'required|string|max=255',
-            'email' => 'required|email',
-            'password' => 'nullable|min:8',
-        ];
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'nomor_handphone' => 'nullable|string|max:15',
+            'jenis_kelamin' => 'required|in:Laki-Laki,Perempuan',
+            // Tambahkan validasi password jika ada field ubah password
+        ]);
 
-        /* Tambahan validasi khusus jika yang login adalah organizer */
-        if (Session::get('user_data.role') === 'organizer') {
-            $rules['organization_type'] = 'nullable|string';
-            $rules['phone'] = 'nullable|string';
-        }
-
-        $validated = $request->validate($rules);
-
-        /* Kirim data pembaruan ke API  */
+        // Panggil API untuk update profil (contoh endpoint: PUT /api/profile/edit-profile)
         $response = Http::withToken(Session::get('api_token'))
-                        ->put($this->apiUrl . '/user/profile/update', $validated);
+                        ->put($this->apiUrl . '/profile/edit-profile', $validated);
 
         if ($response->successful()) {
             $newData = $response->json()['data'];

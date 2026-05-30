@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\Session;
 
 class OrganizerCheckinController extends Controller
 {
-    protected $apiUrl = 'http://127.0.0.1:8001/api';
+    public function __construct()
+    {
+        parent::__construct(); 
+    }
 
     public function index()
     {
@@ -36,7 +39,7 @@ class OrganizerCheckinController extends Controller
         /* Menembak API untuk memvalidasi tiket */
         $response = Http::withToken(Session::get('api_token'))
                         ->post($this->apiUrl . '/organizer/checkin/verify', [
-                            'booking_code' => $request->booking_code
+                            'kode_transaksi' => $request->booking_code
                         ]);
 
         if ($response->successful()) {

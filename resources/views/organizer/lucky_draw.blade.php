@@ -17,7 +17,7 @@
                         <select name="event_id" onchange="document.getElementById('event-filter-form').submit()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-cyan-500/50 cursor-pointer text-slate-700 shadow-sm">
                             @forelse($events ?? [] as $event)
                                 <option value="{{ $event['id'] }}" {{ ($selectedEventId ?? '') == $event['id'] ? 'selected' : '' }}>
-                                    {{ $event['title'] ?? 'Event Tanpa Judul' }}
+                                    {{ $event['nama_event'] ?? 'Event Tanpa Judul' }}
                                 </option>
                             @empty
                                 <option value="">Belum ada event</option>

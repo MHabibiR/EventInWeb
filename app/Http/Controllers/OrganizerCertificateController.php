@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\Session;
 
 class OrganizerCertificateController extends Controller
 {
-    protected $apiUrl = 'http://127.0.0.1:8001/api';
+    public function __construct()
+    {
+        parent::__construct(); 
+    }
 
     public function index(Request $request)
     {

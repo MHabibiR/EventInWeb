@@ -8,20 +8,16 @@ use Illuminate\Support\Facades\Session;
 
 class EventController extends Controller
 {
-    // Definisikan URL dasar API 
-    protected $apiUrl = 'http://127.0.0.1:8001/api'; 
+    public function __construct()
+    {
+        parent::__construct(); 
+    }
 
-    /**
-     * Menampilkan daftar Event (Mengambil data dari API Mobile)
-     */
     public function index()
     {
-        // Melakukan HTTP GET Request ke API Mobile
-        $response = Http::withToken(Session::get('api_token'))->get($this->apiUrl . '/events');
+        $response = Http::withToken(Session::get('api_token'))->get($this->apiUrl . '/admin/events');
 
-        // Pastikan request berhasil
         if ($response->successful()) {
-            // Mengubah response JSON menjadi array PHP
             $events = $response->json()['data'] ?? [];
         } else {
             $events = []; 
@@ -30,37 +26,102 @@ class EventController extends Controller
         return view('main_admin.manage_events', compact('events'));
     }
 
-    /**
-     * Menampilkan form Buat Event
-     */
     public function create()
     {
         return view('main_admin.events');
     }
 
-    /**
-     * Memproses data dari Form Web dan Mengirimkannya ke API Mobile
-     */
     public function store(Request $request)
     {
-        // Validasi inputan form 
-        $validated = $request->validate([
-            'title' => 'required|string|max=255',
-            'event_type' => 'required|string',
-            'total_capacity' => 'required|integer',
-            'description' => 'nullable|string',
-            'date_start' => 'required|date',
-            'date_end' => 'required|date',
-            'venue_name' => 'required|string',
-            'venue_address' => 'nullable|string',
+        $request->validate([
+            'nama_event'   => 'required|string|max:255',
+            'deskripsi'    => 'required',
+            'tanggal'      => 'required|date',
+            'gambar_event' => 'required|image|mimes:jpeg,png,jpg|max:2048' 
+        ], [
+            'nama_event.required' => 'Nama event wajib diisi!',
+            'gambar_event.image' => 'File harus berupa gambar!'
         ]);
 
-        $response = Http::withToken(Session::get('api_token'))->post($this->apiUrl . '/events', $validated);
+
+        $apiCall = Http::withToken(Session::get('api_token'));
+
+        if ($request->hasFile('gambar_event')) {
+            $file = $request->file('gambar_event');
+            
+            $apiCall->attach(
+                'gambar_event', 
+                file_get_contents($file->getRealPath()), 
+                $file->getClientOriginalName()
+            );
+        }
+
+        $response = $apiCall->post($this->apiUrl . '/admin/events', [
+            'nama_event' => $request->input('nama_event'),
+            'deskripsi'  => $request->input('deskripsi'),
+            'tanggal'    => $request->input('tanggal'),
+        ]);
 
         if ($response->successful()) {
-            return redirect('/admin/manage-events')->with('success', 'Event berhasil dibuat via API!');
-        } else {
-            return back()->withErrors(['api_error' => 'Gagal menyimpan data ke server pusat.'])->withInput();
+            return redirect('/admin/manage-events')->with('success', 'Event berhasil ditambahkan!');
         }
+
+        if ($response->status() === 422) {
+            return back()->withErrors($response->json()['errors'])->withInput();
+        }
+
+        return back()->withErrors(['api_error' => 'Gagal menyimpan data ke server API.'])->withInput();
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_event' => 'required|string',
+            'gambar_event' => 'nullable|image|max:2048' 
+        ]);
+
+        $apiCall = Http::withToken(Session::get('api_token'));
+
+        if ($request->hasFile('gambar_event')) {
+            $file = $request->file('gambar_event');
+            $apiCall->attach(
+                'gambar_event', 
+                file_get_contents($file->getRealPath()), 
+                $file->getClientOriginalName()
+            );
+        }
+
+        $response = $apiCall->post($this->apiUrl . "/admin/events/{$id}", [
+            '_method' => 'PUT', 
+            'nama_event' => $request->input('nama_event'),
+            'deskripsi' => $request->input('deskripsi'),
+        ]);
+
+        if ($response->successful()) {
+            return redirect('/admin/manage-events')->with('success', 'Data Event berhasil diperbarui!');
+        }
+
+        if ($response->status() === 422) {
+            return back()->withErrors($response->json()['errors'])->withInput();
+        }
+
+        return back()->withErrors(['api_error' => 'Gagal memperbarui data di server.']);
+    }
+
+
+    public function destroy($id)
+    {
+        $response = Http::withToken(Session::get('api_token'))
+                        ->delete($this->apiUrl . "/admin/events/{$id}");
+
+        if ($response->successful()) {
+            return redirect('/admin/manage-events')->with('success', 'Event berhasil dihapus!');
+        }
+        
+        if ($response->status() === 404) {
+            return back()->withErrors(['api_error' => 'Event tidak ditemukan di server.']);
+        }
+
+        return back()->withErrors(['api_error' => 'Gagal menghapus event. Terjadi kesalahan pada server.']);
     }
 }

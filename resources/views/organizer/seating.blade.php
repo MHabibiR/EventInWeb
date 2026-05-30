@@ -17,7 +17,7 @@
                     <select name="event_id" onchange="document.getElementById('event-filter-form').submit()" class="bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500/20 border border-slate-200 cursor-pointer shadow-sm">
                         @foreach($events as $event)
                             <option value="{{ $event['id'] }}" {{ ($selectedEventId ?? '') == $event['id'] ? 'selected' : '' }}>
-                                {{ $event['title'] }}
+                                {{ $event['nama_event'] }}
                             </option>
                         @endforeach
                     </select>

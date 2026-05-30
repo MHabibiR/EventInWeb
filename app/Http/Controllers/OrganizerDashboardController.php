@@ -8,12 +8,15 @@ use Illuminate\Support\Facades\Session;
 
 class OrganizerDashboardController extends Controller
 {
-    protected $apiUrl = 'http://127.0.0.1:8001/api';
+    public function __construct()
+    {
+        parent::__construct(); 
+    }
 
     public function index()
     {
         $response = Http::withToken(Session::get('api_token'))
-                        ->get($this->apiUrl . '/organizer/dashboard-stats');
+                        ->get($this->apiUrl . '/organizer/dashboard');
 
         if ($response->successful()) {
             $stats = $response->json()['data'] ?? [

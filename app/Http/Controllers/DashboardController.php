@@ -8,13 +8,16 @@ use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
 {
-    protected $apiUrl = 'http://127.0.0.1:8001/api';
+    public function __construct()
+    {
+        parent::__construct(); 
+    }
 
 
     public function adminIndex()
     {
         $response = Http::withToken(Session::get('api_token'))
-                        ->get($this->apiUrl . '/admin/dashboard-stats');
+                        ->get($this->apiUrl . '/admin/dashboard');
 
         if ($response->successful()) {
             $stats = $response->json()['data'] ?? [
